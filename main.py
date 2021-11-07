@@ -1,8 +1,9 @@
 import tweepy
-import cloudscraper  
+import cfscrape  
 import bs4 as bs
 import os
 import time
+from keep_alive import keep_alive
 from dotenv import load_dotenv
 load_dotenv()
 
@@ -25,40 +26,34 @@ except:
 
 
 def btc_info(url):
-    scraper = cloudscraper.create_scraper()
+    scraper = cfscrape.create_scraper()
     scrap = scraper.get(url)
     soup = bs.BeautifulSoup(scrap.text,"html.parser")
-    elembtc = soup.select('#root > div > div.ControlHomepage__PricesTablePositioner-lzy6fr-4.JejXf > section > div > table > tbody > tr:nth-child(1) > td.styles__Column-sc-4x2924-1.AssetTableRow__AssetColumn-bzcx4v-1.AssetTableRow__PriceColumn-bzcx4v-6.dWwxMG > div > span.TextElement__Spacer-hxkcw5-0.cicsNy.Header__StyledHeader-sc-1xiyexz-0.dWwkYJ.AssetTableRow__StyledHeader-bzcx4v-12.AssetTableRow__StyledHeaderDark-bzcx4v-14.hfJTMn')
-    change_elem = soup.select('#root > div > div.ControlHomepage__PricesTablePositioner-lzy6fr-4.JejXf > section > div > table > tbody > tr:nth-child(1) > td.styles__Column-sc-4x2924-1.AssetTableRow__AssetColumn-bzcx4v-1.AssetTableRow__PercentChangeColumn-bzcx4v-16.ghAXfv > span')
+    elembtc = soup.select('#__next > div > div.main-content > div.sc-57oli2-0.comDeo.cmc-body-wrapper > div > div:nth-child(1) > div.h7vnx2-1.bFzXgL > table > tbody > tr:nth-child(1) > td:nth-child(4) > div > a')
+    change_elem = soup.select('#__next > div > div.main-content > div.sc-57oli2-0.comDeo.cmc-body-wrapper > div > div:nth-child(1) > div.h7vnx2-1.bFzXgL > table > tbody > tr:nth-child(1) > td:nth-child(5) > span')
     val = elembtc[0].text.strip()
     change = change_elem[0].text.strip()
     return val,change
 
 def eth_info(url):
-    scraper = cloudscraper.create_scraper()
+    scraper = cfscrape.create_scraper()
     scrap = scraper.get(url)
     soup = bs.BeautifulSoup(scrap.text,"html.parser")
-    elemeth = soup.select('#root > div > div.ControlHomepage__PricesTablePositioner-lzy6fr-4.JejXf > section > div > table > tbody > tr:nth-child(2) > td.styles__Column-sc-4x2924-1.AssetTableRow__AssetColumn-bzcx4v-1.AssetTableRow__PriceColumn-bzcx4v-6.dWwxMG > div > span.TextElement__Spacer-hxkcw5-0.cicsNy.Header__StyledHeader-sc-1xiyexz-0.dWwkYJ.AssetTableRow__StyledHeader-bzcx4v-12.AssetTableRow__StyledHeaderDark-bzcx4v-14.hfJTMn')
-    change_elem = soup.select('#root > div > div.ControlHomepage__PricesTablePositioner-lzy6fr-4.JejXf > section > div > table > tbody > tr:nth-child(2) > td.styles__Column-sc-4x2924-1.AssetTableRow__AssetColumn-bzcx4v-1.AssetTableRow__PercentChangeColumn-bzcx4v-16.ghAXfv > span')
+    elemeth = soup.select('#__next > div > div.main-content > div.sc-57oli2-0.comDeo.cmc-body-wrapper > div > div:nth-child(1) > div.h7vnx2-1.bFzXgL > table > tbody > tr:nth-child(2) > td:nth-child(4) > div > a')
+    change_elem = soup.select('#__next > div > div.main-content > div.sc-57oli2-0.comDeo.cmc-body-wrapper > div > div:nth-child(1) > div.h7vnx2-1.bFzXgL > table > tbody > tr:nth-child(2) > td:nth-child(5) > span')
     valeth = elemeth[0].text.strip()
     change = change_elem[0].text.strip()
     return valeth,change
 
 def main():
-    get_url = 'https://www.coinbase.com/'
-    while(True):
-        try:
-            btc,change = btc_info(get_url)
-            eth,changeeth = eth_info(get_url)
-            api.update_status(f"#Crypto Prices!\n\nBTC = {btc}\nChange = {change}\n\nETH = {eth}\nChange = {changeeth}")
-            break
-        except:
-            continue
-
-def run():
-    while True:
-        main()
-        time.sleep(3600)
+    get_url = 'https://coinmarketcap.com/'
+    btc,change = btc_info(get_url)
+    eth,changeeth = eth_info(get_url)
+    api.update_status(f"#Crypto #Cryptocurrency #BTC #ETH\nPrices!\n\nBTC = {btc}\nChange = {change}\n\nETH = {eth}\nChange = {changeeth}\n\nFollow @pricebotcrypto for hourly update!")
+    
 
 if __name__ == "__main__":
-    run()
+    while True:
+        keep_alive()
+        main()
+        time.sleep(3600)
