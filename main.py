@@ -1,11 +1,12 @@
 import tweepy
-import cfscrape  
+import requests
 import bs4 as bs
 import os
 import time
-from keep_alive import keep_alive # this is for replit only not needed if you run on the computer or own server.
+from keep_alive import keep_alive
 from dotenv import load_dotenv
 load_dotenv()
+
 
 
 API_key = os.getenv("API_KEY")
@@ -26,9 +27,9 @@ except:
 
 
 def btc_info(url):
-    scraper = cfscrape.create_scraper()
-    scrap = scraper.get(url)
-    soup = bs.BeautifulSoup(scrap.text,"html.parser")
+    time.sleep(2)
+    response = requests.get(url)
+    soup = bs.BeautifulSoup(response.text,"html.parser")
     elembtc = soup.select('#__next > div > div.main-content > div.sc-57oli2-0.comDeo.cmc-body-wrapper > div > div:nth-child(1) > div.h7vnx2-1.bFzXgL > table > tbody > tr:nth-child(1) > td:nth-child(4) > div > a')
     change_elem = soup.select('#__next > div > div.main-content > div.sc-57oli2-0.comDeo.cmc-body-wrapper > div > div:nth-child(1) > div.h7vnx2-1.bFzXgL > table > tbody > tr:nth-child(1) > td:nth-child(5) > span')
     val = elembtc[0].text.strip()
@@ -36,9 +37,9 @@ def btc_info(url):
     return val,change
 
 def eth_info(url):
-    scraper = cfscrape.create_scraper()
-    scrap = scraper.get(url)
-    soup = bs.BeautifulSoup(scrap.text,"html.parser")
+    time.sleep(2)
+    res = requests.get(url)
+    soup = bs.BeautifulSoup(res.text,"html.parser")
     elemeth = soup.select('#__next > div > div.main-content > div.sc-57oli2-0.comDeo.cmc-body-wrapper > div > div:nth-child(1) > div.h7vnx2-1.bFzXgL > table > tbody > tr:nth-child(2) > td:nth-child(4) > div > a')
     change_elem = soup.select('#__next > div > div.main-content > div.sc-57oli2-0.comDeo.cmc-body-wrapper > div > div:nth-child(1) > div.h7vnx2-1.bFzXgL > table > tbody > tr:nth-child(2) > td:nth-child(5) > span')
     valeth = elemeth[0].text.strip()
@@ -46,24 +47,25 @@ def eth_info(url):
     return valeth,change
 
 def sol_info(url):
-    scraper = cfscrape.create_scraper()
-    scrap = scraper.get(url)
-    soup = bs.BeautifulSoup(scrap.text,"html.parser")
-    elemsol = soup.select('#__next > div > div.main-content > div.sc-57oli2-0.comDeo.cmc-body-wrapper > div > div:nth-child(1) > div.h7vnx2-1.bFzXgL > table > tbody > tr:nth-child(5) > td:nth-child(4) > div > a')
-    change_elem = soup.select('#__next > div > div.main-content > div.sc-57oli2-0.comDeo.cmc-body-wrapper > div > div:nth-child(1) > div.h7vnx2-1.bFzXgL > table > tbody > tr:nth-child(5) > td:nth-child(5) > span')
+    time.sleep(4)
+    res = requests.get(url)
+    soup = bs.BeautifulSoup(res.text,"html.parser")
+    elemsol = soup.select('#__next > div > div.main-content > div.sc-57oli2-0.comDeo.cmc-body-wrapper > div > div > div.h7vnx2-1.bFzXgL > table > tbody > tr:nth-child(9) > td:nth-child(4) > div > a > span')
+    change_elem = soup.select('#__next > div > div.main-content > div.sc-57oli2-0.comDeo.cmc-body-wrapper > div > div > div.h7vnx2-1.bFzXgL > table > tbody > tr:nth-child(9) > td:nth-child(5) > span')
     valsol = elemsol[0].text.strip()
     change = change_elem[0].text.strip()
     return valsol,change
 
 def Cardano_info(url):
-    scraper = cfscrape.create_scraper()
-    scrap = scraper.get(url)
-    soup = bs.BeautifulSoup(scrap.text,"html.parser")
-    elemada = soup.select('#__next > div > div.main-content > div.sc-57oli2-0.comDeo.cmc-body-wrapper > div > div:nth-child(1) > div.h7vnx2-1.bFzXgL > table > tbody > tr:nth-child(6) > td:nth-child(4) > div > a')
-    change_elem = soup.select('#__next > div > div.main-content > div.sc-57oli2-0.comDeo.cmc-body-wrapper > div > div:nth-child(1) > div.h7vnx2-1.bFzXgL > table > tbody > tr:nth-child(6) > td:nth-child(5) > span')
+    time.sleep(4)
+    res = requests.get(url)
+    soup = bs.BeautifulSoup(res.text,"html.parser")
+    elemada = soup.select('#__next > div > div.main-content > div.sc-57oli2-0.comDeo.cmc-body-wrapper > div > div > div.h7vnx2-1.bFzXgL > table > tbody > tr:nth-child(7) > td:nth-child(4) > div > a > span')
+    change_elem = soup.select('#__next > div > div.main-content > div.sc-57oli2-0.comDeo.cmc-body-wrapper > div > div > div.h7vnx2-1.bFzXgL > table > tbody > tr:nth-child(7) > td:nth-child(5) > span')
     valada = elemada[0].text.strip()
     change = change_elem[0].text.strip()
     return valada,change
+
 
 
 
@@ -73,12 +75,11 @@ def main():
     eth,changeeth = eth_info(get_url)
     sol,changesol = sol_info(get_url)
     ada, changeada = Cardano_info(get_url)
-    api.update_status(f"#Crypto #Cryptocurrency #BTC #ETH #Solana #ADA\n\nBTC = {btc}\nChange = {change}\n\nETH = {eth}\nChange = {changeeth}\n\nSolana = {sol}\nChange = {changesol}\n\nADA = {ada}\nChange = {changeada}\n\nFollow @pricebotcrypto for hourly update!")
-
+    api.update_status(f"#Crypto #Cryptocurrency #BTC #ETH #Solana #ADA #Bitcoin \n\nBTC = {btc}\nChange = {change}\n\nETH = {eth}\nChange = {changeeth}\n\nSolana = {sol}\nChange = {changesol}\n\nADA = {ada}\nChange = {changeada}\n\n\nFollow @pricebotcrypto for hourly update!")
+    keep_alive()
 
 
 if __name__ == "__main__":
     while True:
-        keep_alive()
         main()
         time.sleep(3600)
