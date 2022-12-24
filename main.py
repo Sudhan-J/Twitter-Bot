@@ -1,22 +1,30 @@
 import tweepy
-import requests
-import bs4 as bs
 import os
 import time
+import requests
+import json
 from keep_alive import keep_alive
 from dotenv import load_dotenv
+
 load_dotenv()
 
-
+URL = 'https://pro-api.coinmarketcap.com/v1/cryptocurrency/quotes/latest'
 
 API_key = os.getenv("API_KEY")
 API_secret_key = os.getenv("API_KEY_SECRET")
 access_token = os.getenv("ACCESS_TOKEN")
 access_token_secret = os.getenv("ACCESS_TOKEN_SECRET")
+COINMARKETCAP_API_KEY = os.getenv('COINMARKETCAP_API_KEY')
 
+headers = {
+    'Accepts': 'application/json',
+    'X-CMC_PRO_API_KEY': COINMARKETCAP_API_KEY,
+}
+session = requests.Session()
+session.headers.update(headers)
 
-auth = tweepy.OAuthHandler(API_key,API_secret_key)
-auth.set_access_token(access_token,access_token_secret)
+auth = tweepy.OAuthHandler(API_key, API_secret_key)
+auth.set_access_token(access_token, access_token_secret)
 api = tweepy.API(auth)
 
 try:
@@ -26,56 +34,66 @@ except:
     print("Authentication Error")
 
 
-def btc_info(url):
-    time.sleep(2)
-    response = requests.get(url)
-    soup = bs.BeautifulSoup(response.text,"html.parser")
-    elembtc = soup.select('#__next > div > div.main-content > div.sc-57oli2-0.comDeo.cmc-body-wrapper > div > div:nth-child(1) > div.h7vnx2-1.bFzXgL > table > tbody > tr:nth-child(1) > td:nth-child(4) > div > a')
-    change_elem = soup.select('#__next > div > div.main-content > div.sc-57oli2-0.comDeo.cmc-body-wrapper > div > div:nth-child(1) > div.h7vnx2-1.bFzXgL > table > tbody > tr:nth-child(1) > td:nth-child(5) > span')
-    val = elembtc[0].text.strip()
-    change = change_elem[0].text.strip()
-    return val,change
-
-def eth_info(url):
-    time.sleep(2)
-    res = requests.get(url)
-    soup = bs.BeautifulSoup(res.text,"html.parser")
-    elemeth = soup.select('#__next > div > div.main-content > div.sc-57oli2-0.comDeo.cmc-body-wrapper > div > div:nth-child(1) > div.h7vnx2-1.bFzXgL > table > tbody > tr:nth-child(2) > td:nth-child(4) > div > a')
-    change_elem = soup.select('#__next > div > div.main-content > div.sc-57oli2-0.comDeo.cmc-body-wrapper > div > div:nth-child(1) > div.h7vnx2-1.bFzXgL > table > tbody > tr:nth-child(2) > td:nth-child(5) > span')
-    valeth = elemeth[0].text.strip()
-    change = change_elem[0].text.strip()
-    return valeth,change
-
-def sol_info(url):
-    time.sleep(4)
-    res = requests.get(url)
-    soup = bs.BeautifulSoup(res.text,"html.parser")
-    elemsol = soup.select('#__next > div > div.main-content > div.sc-57oli2-0.comDeo.cmc-body-wrapper > div > div > div.h7vnx2-1.bFzXgL > table > tbody > tr:nth-child(9) > td:nth-child(4) > div > a > span')
-    change_elem = soup.select('#__next > div > div.main-content > div.sc-57oli2-0.comDeo.cmc-body-wrapper > div > div > div.h7vnx2-1.bFzXgL > table > tbody > tr:nth-child(9) > td:nth-child(5) > span')
-    valsol = elemsol[0].text.strip()
-    change = change_elem[0].text.strip()
-    return valsol,change
-
-def Cardano_info(url):
-    time.sleep(4)
-    res = requests.get(url)
-    soup = bs.BeautifulSoup(res.text,"html.parser")
-    elemada = soup.select('#__next > div > div.main-content > div.sc-57oli2-0.comDeo.cmc-body-wrapper > div > div > div.h7vnx2-1.bFzXgL > table > tbody > tr:nth-child(7) > td:nth-child(4) > div > a > span')
-    change_elem = soup.select('#__next > div > div.main-content > div.sc-57oli2-0.comDeo.cmc-body-wrapper > div > div > div.h7vnx2-1.bFzXgL > table > tbody > tr:nth-child(7) > td:nth-child(5) > span')
-    valada = elemada[0].text.strip()
-    change = change_elem[0].text.strip()
-    return valada,change
+def bitcoin_price():
+    PARAMS = {'slug': 'bitcoin', 'convert': 'USD'}
+    response_from_server = session.get(URL, params=PARAMS)
+    value = json.loads(
+        response_from_server.text)['data']['1']['quote']['USD']['price']
+    change = json.loads(response_from_server.text
+                        )['data']['1']['quote']['USD']['percent_change_1h']
+    return round(value, 2), round(change, 3)
 
 
+def ethereum_price():
+    PARAMS = {'slug': 'ethereum', 'convert': 'USD'}
+    response_from_server = session.get(URL, params=PARAMS)
+    value = json.loads(
+        response_from_server.text)['data']['1027']['quote']['USD']['price']
+    change = json.loads(response_from_server.text
+                        )['data']['1027']['quote']['USD']['percent_change_1h']
+    return round(value, 2), round(change, 3)
+
+
+def bnb_price():
+    PARAMS = {'slug': 'bnb', 'convert': 'USD'}
+    response_from_server = session.get(URL, params=PARAMS)
+    value = json.loads(
+        response_from_server.text)['data']['1839']['quote']['USD']['price']
+    change = json.loads(response_from_server.text
+                        )['data']['1839']['quote']['USD']['percent_change_1h']
+    return round(value, 2), round(change, 3)
+
+
+def solana_price():
+    PARAMS = {'slug': 'solana', 'convert': 'USD'}
+    response_from_server = session.get(URL, params=PARAMS)
+    value = json.loads(
+        response_from_server.text)['data']['5426']['quote']['USD']['price']
+    change = json.loads(response_from_server.text
+                        )['data']['5426']['quote']['USD']['percent_change_1h']
+    return round(value, 2), round(change, 3)
+
+
+def doge_price():
+    PARAMS = {'slug': 'dogecoin', 'convert': 'USD'}
+    response_from_server = session.get(URL, params=PARAMS)
+    # data = json.loads(response_from_server.text)
+    value = json.loads(
+        response_from_server.text)['data']['74']['quote']['USD']['price']
+    change = json.loads(response_from_server.text
+                        )['data']['74']['quote']['USD']['percent_change_1h']
+    return round(value, 5), round(change, 3)
+    # pprint.pprint(data)
 
 
 def main():
-    get_url = 'https://coinmarketcap.com/'
-    btc,change = btc_info(get_url)
-    eth,changeeth = eth_info(get_url)
-    sol,changesol = sol_info(get_url)
-    ada, changeada = Cardano_info(get_url)
-    api.update_status(f"#Crypto #Cryptocurrency #BTC #ETH #Solana #ADA #Bitcoin \n\nBTC = {btc}\nChange = {change}\n\nETH = {eth}\nChange = {changeeth}\n\nSolana = {sol}\nChange = {changesol}\n\nADA = {ada}\nChange = {changeada}\n\n\nFollow @pricebotcrypto for hourly update!")
+    btc, btc_change = bitcoin_price()
+    eth, eth_change = ethereum_price()
+    bnb, bnb_change = bnb_price()
+    sol, sol_change = solana_price()
+    api.update_status(
+        f"#Crypto #Cryptocurrency #BTC #ETH #BNB #Solana #Bitcoin\n\nBTC = ${btc}\nChange = {btc_change}%\n\nETH = ${eth}\nChange = {eth_change}%\n\nBNB = ${bnb}\nChange = {bnb_change}%\n\nSolana = ${sol}\nChange = {sol_change}%\n\nFollow @CryptoPriceBot_ for hourly update!"
+    )
     keep_alive()
 
 
