@@ -10,11 +10,11 @@ load_dotenv()
 
 URL = 'https://pro-api.coinmarketcap.com/v1/cryptocurrency/quotes/latest'
 
-API_key = os.getenv("API_KEY")
-API_secret_key = os.getenv("API_KEY_SECRET")
-access_token = os.getenv("ACCESS_TOKEN")
-access_token_secret = os.getenv("ACCESS_TOKEN_SECRET")
-COINMARKETCAP_API_KEY = os.getenv('COINMARKETCAP_API_KEY')
+API_KEY = os.getenv("API_KEY")
+API_SECRET_KEY = os.getenv("API_SECRET_KEY")
+ACCESS_TOKEN = os.getenv("ACCESS_TOKEN")
+ACCESS_TOKEN_SECRET = os.getenv("ACCESS_TOKEN_SECRET")
+COINMARKETCAP_API_KEY = os.getenv("COINMARKETCAP_API_KEY")
 
 headers = {
     'Accepts': 'application/json',
@@ -23,15 +23,15 @@ headers = {
 session = requests.Session()
 session.headers.update(headers)
 
-auth = tweepy.OAuthHandler(API_key, API_secret_key)
-auth.set_access_token(access_token, access_token_secret)
-api = tweepy.API(auth)
-
-try:
-    api.verify_credentials()
-    print("Authentication Successful")
-except:
-    print("Authentication Error")
+# auth = tweepy.OAuthHandler(API_key, API_secret_key)
+# auth.set_access_token(access_token, access_token_secret)
+# api = tweepy.API(auth)
+client = tweepy.Client(consumer_key=API_KEY,consumer_secret=API_SECRET_KEY,access_token=ACCESS_TOKEN,access_token_secret=ACCESS_TOKEN_SECRET)
+# try:
+#     client.verify_credentials()
+#     print("Authentication Successful")
+# except:
+#     print("Authentication Error")
 
 
 def bitcoin_price():
@@ -91,10 +91,10 @@ def main():
     eth, eth_change = ethereum_price()
     bnb, bnb_change = bnb_price()
     sol, sol_change = solana_price()
-    api.update_status(
-        f"#Crypto #Cryptocurrency #BTC #ETH #BNB #Solana #Bitcoin\n\nBTC = ${btc}\nChange = {btc_change}%\n\nETH = ${eth}\nChange = {eth_change}%\n\nBNB = ${bnb}\nChange = {bnb_change}%\n\nSolana = ${sol}\nChange = {sol_change}%\n\nFollow @CryptoPriceBot_ for hourly update!"
-    )
+    client.create_tweet(text=f"#Crypto #Cryptocurrency #BTC #ETH #BNB #Solana #Bitcoin\n\nBTC = ${btc}\nChange = {btc_change}%\n\nETH = ${eth}\nChange = {eth_change}%\n\nBNB = ${bnb}\nChange = {bnb_change}%\n\nSolana = ${sol}\nChange = {sol_change}%\n\nFollow @CryptoPriceBot_ for hourly update!")
+    print("Success")
     keep_alive()
+    
 
 
 if __name__ == "__main__":
